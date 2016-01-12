@@ -36,7 +36,7 @@ unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
 uint256 hashGenesisBlock("0x000000e79a20d718a2f2d8b98161dc6700104a22d8e9be70e8ac361ee6664b9c");
-static const unsigned int timeGenesisBlock = 1392688072;
+static const unsigned int timeGenesisBlock = 1452619917;
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 24);
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -1088,12 +1088,12 @@ uint256 static GetOrphanRoot(const CBlockHeader* pblock)
     return pblock->GetHash();
 }
 
-static const int64 nGenesisBlockRewardCoin = 32768 * COIN;
-static const int64 nBlockRewardStartCoin = 32768 * COIN;
+static const int64 nGenesisBlockRewardCoin = 50 * COIN;
+static const int64 nBlockRewardStartCoin = 50 * COIN;
 
-static const int64 nTargetTimespan = 60 * 60; // 60 minutes
-static const int64 nTargetSpacing = 3 * 60; // 3 minutes
-static const int64 nInterval = nTargetTimespan / nTargetSpacing; // 20 blocks
+static const int64 nTargetTimespan = 1 * 6 * 60 * 60; // 6 hours 21600
+static const int64 nTargetSpacing = 6 * 60; // 5 minutes 360
+static const int64 nInterval = nTargetTimespan / nTargetSpacing; // 60 blocks
 
 int64 static GetBlockValue(int nHeight, int64 nFees, unsigned int nBits)
 {
@@ -1102,22 +1102,12 @@ int64 static GetBlockValue(int nHeight, int64 nFees, unsigned int nBits)
     {
         return nGenesisBlockRewardCoin;
     }
-    unsigned int basenBits = bnProofOfWorkLimit.GetCompact();
-    int nShift = int((basenBits >> 24) & 0xff) - int((nBits >> 24) & 0xff);
-    double dDiff =
-        (double)(basenBits & 0x007fffff) / (double)(nBits & 0x007fffff);
-    while (nShift > 0)
+    if (nHeight > 1051200)
     {
-        dDiff *= 256.0;
-        --nShift;
-    }
-    while (nShift < 0)
-    {
-        dDiff /= 256.0;
-        ++nShift;
-    }
-     int64 nSubsidy1 = int64(sqrt(dDiff * nHeight));
-     int64 nSubsidy = nSubsidy1 + nBlockRewardStartCoin;
+		int64 nBlockRewardStartCoin / 2;
+		int64 nSubsidy = nBlockRewardStartCoin;
+	}
+	else { int64 nSubsidy = nBlockRewardStartCoin; }
     
     return nSubsidy + nFees;
 }
@@ -2878,7 +2868,7 @@ bool InitBlockIndex() {
 */
 
         // Genesis block
-        const char* pszTimestamp = "US forces target leading al-Shabaab militant in Somalian coastal raid";
+        const char* pszTimestamp = "'Sekolah lalok' ponteng tumpuan pelajar diroboh";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -2896,7 +2886,7 @@ bool InitBlockIndex() {
 
         if (fTestNet)
         {
-            block.nTime    = 1392351202;
+            block.nTime    = timeGenesisBlock;
             block.nNonce   = 4335147;
         }
 
@@ -2906,7 +2896,7 @@ bool InitBlockIndex() {
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
         block.print();
-        assert(block.hashMerkleRoot == uint256("0x251e462b7d8b2e92e74651186fbbc66ac715cf9c160212efb02642232207112d"));
+        assert(block.hashMerkleRoot == uint256("0x0000000000000000000000000000000000000000000000000000000000000000"));
         
 
         
